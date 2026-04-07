@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Краткая запись — тренажёр для методистов</title>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600&family=Golos+Text:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F5F2EB;
+  --surface: #FDFBF7;
+  --surface2: #F0EDE4;
+  --ink: #1C1A15;
+  --ink2: #5A564E;
+  --ink3: #9A9590;
+  --accent: #2D6A4F;
+  --accent-light: #D8EFE4;
+  --accent-mid: #52B788;
+  --warn: #C1440E;
+  --warn-light: #FDEEE8;
+  --border: rgba(28,26,21,0.12);
+  --border-strong: rgba(28,26,21,0.22);
+  --radius: 12px;
+  --radius-sm: 8px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Golos Text', sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  min-height: 100vh;
+  line-height: 1.6;
+}
+
+/* HEADER */
+.header {
+  background: var(--ink);
+  padding: 2rem 2.5rem 1.8rem;
+  position: relative;
+  overflow: hidden;
+}
+.header::before {
+  content: '';
+  position: absolute;
+  top: -40px; right: -40px;
+  width: 180px; height: 180px;
+  border-radius: 50%;
+  background: rgba(82,183,136,0.12);
+}
+.header-label {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  color: var(--accent-mid);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.header h1 {
+  font-family: 'Unbounded', sans-serif;
+  font-size: clamp(18px, 3vw, 26px);
+  font-weight: 600;
+  color: #fff;
+  line-height: 1.2;
+  margin-bottom: 8px;
+}
+.header-sub {
+  font-size: 14px;
+  color: rgba(255,255,255,0.5);
+  max-width: 480px;
+}
+
+/* TABS */
+.tabs {
+  display: flex;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  padding: 0 2.5rem;
+  gap: 0;
+}
+.tab {
+  padding: 14px 20px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink3);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.tab:hover { color: var(--ink); }
+.tab.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+/* PANELS */
+.panel { display: none; padding: 2rem 2.5rem; max-width: 860px; }
+.panel.active { display: block; }
+
+/* RULES SECTION */
+.rules-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 2rem; }
+@media (max-width: 600px) { .rules-grid { grid-template-columns: 1fr; } }
+
+.rule-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.1rem 1.2rem;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.rule-num {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: #fff;
+  font-family: 'Unbounded', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.rule-body h3 { font-size: 13px; font-weight: 600; margin-bottom: 4px; color: var(--ink); }
+.rule-body p { font-size: 12.5px; color: var(--ink2); line-height: 1.5; }
+
+/* EXAMPLES */
+.examples-title {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink3);
+  margin-bottom: 14px;
+}
+.example-block {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 14px;
+}
+.example-header {
+  padding: 10px 16px;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink2);
+}
+.example-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  divide-x: 1px solid var(--border);
+}
+.example-col {
+  padding: 14px 16px;
+}
+.example-col:first-child {
+  border-right: 1px solid var(--border);
+}
+.col-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.col-label.bad { color: var(--warn); }
+.col-label.good { color: var(--accent); }
+.kz-text {
+  font-family: monospace;
+  font-size: 13px;
+  line-height: 2;
+  color: var(--ink);
+}
+.kz-text .err { color: var(--warn); text-decoration: underline wavy var(--warn); }
+.kz-text .fix { color: var(--accent); font-weight: 600; }
+.example-note {
+  padding: 10px 16px;
+  background: #FFF8F5;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--ink2);
+  line-height: 1.5;
+}
+.badge {
+  display: inline-block;
+  background: var(--warn-light);
+  color: var(--warn);
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 6px;
+  margin-right: 4px;
+}
+.badge.good {
+  background: var(--accent-light);
+  color: var(--accent);
+}
+
+/* CHECKLIST */
+.checklist {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.2rem 1.4rem;
+  margin-top: 1.5rem;
+}
+.checklist h3 {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink3);
+  margin-bottom: 12px;
+}
+.check-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13.5px;
+  color: var(--ink);
+}
+.check-item:last-child { border-bottom: none; }
+.check-icon {
+  width: 18px; height: 18px;
+  border-radius: 4px;
+  border: 1.5px solid var(--accent);
+  background: var(--accent-light);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  font-size: 10px;
+  color: var(--accent);
+}
+
+/* PRACTICE PANEL */
+.task-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.4rem;
+  margin-bottom: 1.2rem;
+}
+.task-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.task-num {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--ink3);
+}
+.difficulty {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-weight: 500;
+}
+.diff-easy { background: var(--accent-light); color: var(--accent); }
+.diff-med { background: #FEF3C7; color: #92400E; }
+.diff-hard { background: var(--warn-light); color: var(--warn); }
+
+.task-text {
+  font-size: 14.5px;
+  line-height: 1.7;
+  color: var(--ink);
+  background: var(--bg);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  margin-bottom: 14px;
+  border-left: 3px solid var(--border-strong);
+}
+
+.input-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ink3);
+  margin-bottom: 8px;
+}
+.kz-input {
+  width: 100%;
+  min-height: 130px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  font-family: monospace;
+  font-size: 14px;
+  color: var(--ink);
+  background: var(--surface);
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.2s;
+  line-height: 1.8;
+}
+.kz-input:focus { border-color: var(--accent); }
+.kz-input::placeholder { color: var(--ink3); font-style: italic; }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: var(--radius-sm);
+  font-family: 'Golos Text', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+}
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+}
+.btn-primary:hover { background: #245A41; }
+.btn-primary:disabled { background: var(--ink3); cursor: not-allowed; }
+.btn-secondary {
+  background: var(--surface2);
+  color: var(--ink);
+  border: 1px solid var(--border-strong);
+}
+.btn-secondary:hover { background: var(--border); }
+
+.btn-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+/* FEEDBACK */
+.feedback-box {
+  margin-top: 14px;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  display: none;
+}
+.feedback-box.visible { display: block; }
+.feedback-header {
+  padding: 10px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.feedback-header.checking {
+  background: var(--surface2);
+  color: var(--ink2);
+}
+.feedback-header.ok {
+  background: var(--accent-light);
+  color: var(--accent);
+}
+.feedback-header.errors {
+  background: var(--warn-light);
+  color: var(--warn);
+}
+.feedback-body {
+  padding: 14px 16px;
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: var(--ink);
+  background: var(--surface);
+}
+.feedback-body ul {
+  margin: 8px 0 0 0;
+  padding-left: 18px;
+}
+.feedback-body li { margin-bottom: 5px; }
+.spinner {
+  width: 16px; height: 16px;
+  border: 2px solid rgba(0,0,0,0.1);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.score-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+  margin-bottom: 4px;
+}
+.score-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.score-ok { background: var(--accent-light); color: var(--accent); }
+.score-err { background: var(--warn-light); color: var(--warn); }
+
+/* TASK NAV */
+.task-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.2rem;
+}
+.task-progress {
+  display: flex;
+  gap: 5px;
+}
+.prog-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--border-strong);
+  transition: background 0.2s;
+}
+.prog-dot.done { background: var(--accent); }
+.prog-dot.active { background: var(--ink); }
+
+/* HINT */
+.hint-toggle {
+  font-size: 12px;
+  color: var(--ink3);
+  cursor: pointer;
+  text-decoration: underline;
+  margin-top: 8px;
+  display: inline-block;
+}
+.hint-box {
+  margin-top: 8px;
+  background: #FFFBF0;
+  border: 1px solid #E8D88A;
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 13px;
+  color: #7A6000;
+  display: none;
+}
+.hint-box.visible { display: block; }
+
+/* SECTION DIVIDER */
+.sdiv {
+  height: 1px;
+  background: var(--border);
+  margin: 1.8rem 0;
+}
+
+.panel-title {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 1.2rem;
+  color: var(--ink);
+}
+
+/* FREE CHECKER */
+.free-checker {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.4rem;
+}
+.task-input-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ink3);
+  margin-bottom: 6px;
+}
+.task-desc-input {
+  width: 100%;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-family: 'Golos Text', sans-serif;
+  font-size: 13.5px;
+  color: var(--ink);
+  background: var(--surface);
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.2s;
+  min-height: 70px;
+  margin-bottom: 14px;
+}
+.task-desc-input:focus { border-color: var(--accent); }
+.task-desc-input::placeholder { color: var(--ink3); }
+
+@media (max-width: 600px) {
+  .panel { padding: 1.2rem 1rem; }
+  .tabs { padding: 0 1rem; overflow-x: auto; }
+  .example-cols { grid-template-columns: 1fr; }
+  .header { padding: 1.5rem 1rem; }
+}
+</style>
+</head>
+<body>
+
+<div id="keyBar" style="background:var(--ink);padding:10px 2.5rem;display:flex;align-items:center;gap:10px;flex-wrap:wrap;border-bottom:1px solid rgba(255,255,255,0.08);">
+  <span style="font-size:12px;font-weight:600;color:rgba(255,255,255,0.5);white-space:nowrap;">🔑 Ключ доступа:</span>
+  <input id="clientKeyInput" type="password"
+    placeholder="Вставьте свой clientKey..."
+    style="flex:1;min-width:200px;padding:7px 14px;border-radius:30px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.07);font-family:'Golos Text',sans-serif;font-size:13px;font-weight:500;outline:none;color:#fff;"
+    oninput="saveKey(this.value)"
+    onfocus="this.type='text'"
+    onblur="this.type='password'">
+  <span id="keyStatus" style="font-size:12px;font-weight:600;color:var(--accent-mid);"></span>
+</div>
+
+<div class="header">
+  <div class="header-label">Методический тренажёр</div>
+  <h1>Краткая запись задачи</h1>
+  <div class="header-sub">Правила, примеры и проверка с обратной связью от ИИ</div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="showTab('theory')">Теория</div>
+  <div class="tab" onclick="showTab('examples')">Частые ошибки</div>
+  <div class="tab" onclick="showTab('checker')">Проверить/составить КЗ</div>
+</div>
+
+<!-- ============ THEORY ============ -->
+<div class="panel active" id="tab-theory">
+  <div class="panel-title">Правила составления краткой записи</div>
+  <div class="rules-grid">
+    <div class="rule-card">
+      <div class="rule-num">1</div>
+      <div class="rule-body">
+        <h3>Начальная форма</h3>
+        <p>Все слова — в именительном падеже (кто? что?). Не «денег» — а «Деньги», не «книг» — а «Книги».</p>
+      </div>
+    </div>
+    <div class="rule-card">
+      <div class="rule-num">2</div>
+      <div class="rule-body">
+        <h3>Каждое условие — с новой строки</h3>
+        <p>Одна строка = одна величина. Перечисление через запятую или точку с запятой в одну строку — ошибка.</p>
+      </div>
+    </div>
+    <div class="rule-card" style="grid-column: span 2;">
+      <div class="rule-num">3</div>
+      <div class="rule-body" style="width:100%">
+        <h3>Порядок = логика задачи</h3>
+        <p style="margin-bottom:12px">Порядок строк отражает хронологию события: сначала то, что «было» или «дано», потом действие, потом результат. В кратких записях должна быть отражена <strong>взаимосвязь и последовательность</strong> того, что случилось в задаче.</p>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:4px;">
+          <div style="background:var(--accent-light); border-radius:var(--radius-sm); padding:10px 14px;">
+            <div style="font-size:10px; font-weight:600; color:var(--accent); letter-spacing:0.07em; text-transform:uppercase; margin-bottom:6px;">Можно</div>
+            <div style="font-family:monospace; font-size:13px; line-height:1.9; color:var(--ink)">Было — ?<br>Положили — 7 к.<br>Стало — 18 к.</div>
+          </div>
+          <div style="background:var(--warn-light); border-radius:var(--radius-sm); padding:10px 14px;">
+            <div style="font-size:10px; font-weight:600; color:var(--warn); letter-spacing:0.07em; text-transform:uppercase; margin-bottom:6px;">Нельзя</div>
+            <div style="font-family:monospace; font-size:13px; line-height:1.9; color:var(--ink)">Положили — 7 к.<br>Стало — 18 к.<br>Было — ?</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="rule-card">
+      <div class="rule-num">4</div>
+      <div class="rule-body">
+        <h3>Вопрос — кратко: «Было — ?»</h3>
+        <p>Не нужно повторять полный вопрос задачи. Только ключевое слово + «?». Нельзя писать «Сколько было — ?» или «Сколько всего — ?» — только «Было — ?», «Всего — ?».</p>
+      </div>
+    </div>
+    <div class="rule-card">
+      <div class="rule-num">5</div>
+      <div class="rule-body">
+        <h3>Принятые сокращения</h3>
+        <p>м. = мультфильмы, р. = рубли, к. = карандаши/копейки, л. = литры. Не расписывать слово полностью, если есть стандартное сокращение.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="checklist">
+    <h3>Чек-лист перед сдачей КЗ</h3>
+    <div class="check-item"><div class="check-icon">✓</div>Все слова в именительном падеже</div>
+    <div class="check-item"><div class="check-icon">✓</div>Каждая величина — на отдельной строке</div>
+    <div class="check-item"><div class="check-icon">✓</div>Порядок строк соответствует логике задачи</div>
+    <div class="check-item"><div class="check-icon">✓</div>Вопрос краткий без слова «Сколько»: «Слово — ?»</div>
+    <div class="check-item"><div class="check-icon">✓</div>Нет полных предложений и лишних слов</div>
+  </div>
+</div>
+
+<!-- ============ EXAMPLES ============ -->
+<div class="panel" id="tab-examples">
+  <div class="panel-title">Разбор реальных кейсов</div>
+
+  <div class="example-block">
+    <div class="example-header">Задача 1 — Карандаши (брат и сестра)</div>
+    <div class="example-cols">
+      <div class="example-col">
+        <div class="col-label bad">Неверно</div>
+        <div class="kz-text">
+          Брат — 5 р;<br>
+          Сестра — 7 р;<br>
+          Цена — 3 р за карандаш;<br>
+          <span class="err">Всего карандашей — ?</span>
+        </div>
+      </div>
+      <div class="example-col">
+        <div class="col-label good">Верно</div>
+        <div class="kz-text">
+          Брат — 5 р.<br>
+          Сестра — 7 р.<br>
+          Цена 1 к. — 3 р.<br>
+          <span class="fix">Всего — ? к.</span>
+        </div>
+      </div>
+    </div>
+    <div class="example-note">
+      <span class="badge">3 ошибки</span>
+      «Всего карандашей» — полное словосочетание вместо «Всего». Нет единицы при вопросе (нужно «? к.»). «Цена — 3 р за карандаш» перегружена — лаконичнее «Цена 1 к. — 3 р.»
+    </div>
+  </div>
+
+  <div class="example-block">
+    <div class="example-header">Задача 2 — Цена и деньги</div>
+    <div class="example-cols">
+      <div class="example-col">
+        <div class="col-label bad">Неверно</div>
+        <div class="kz-text">
+          Цена — 5 р.<br>
+          <span class="err">Денег</span> — 20 р.<br>
+          Количество — ?
+        </div>
+      </div>
+      <div class="example-col">
+        <div class="col-label good">Верно</div>
+        <div class="kz-text">
+          Цена — 5 р.<br>
+          <span class="fix">Деньги</span> — 20 р.<br>
+          Количество — ?
+        </div>
+      </div>
+    </div>
+    <div class="example-note">
+      <span class="badge">1 ошибка</span>
+      «Денег» — родительный падеж. В краткой записи — только именительный: «Деньги» (что? — деньги).
+    </div>
+  </div>
+
+  <div class="example-block">
+    <div class="example-header">Задача 3 — Вода (дача и станция)</div>
+    <div class="example-cols">
+      <div class="example-col">
+        <div class="col-label bad">Неверно</div>
+        <div class="kz-text">
+          На дачу — 14 л.<br>
+          На станцию — 3 л.<br>
+          Осталось — 23 л.<br>
+          <span class="err">Сколько было — ?</span>
+        </div>
+      </div>
+      <div class="example-col">
+        <div class="col-label good">Верно</div>
+        <div class="kz-text">
+          <span class="fix">Было — ?</span><br>
+          На дачу — 14 л.<br>
+          На станцию — 3 л.<br>
+          Осталось — 23 л.
+        </div>
+      </div>
+    </div>
+    <div class="example-note">
+      <span class="badge">2 ошибки</span>
+      «Сколько было» — полная фраза, нужно «Было». Логика задачи требует «Было» поставить первой строкой — сначала что-то было, потом из этого взяли. Неизвестное стоит первым.
+    </div>
+  </div>
+
+
+</div>
+
+
+<!-- ============ FREE CHECKER ============ -->
+<div class="panel" id="tab-checker">
+  <div class="panel-title">Проверить / составить КЗ</div>
+
+  <!-- BLOCK 1: AI SAMPLE -->
+  <div style="margin-bottom:1.4rem;">
+    <div style="font-family:'Unbounded',sans-serif;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:10px;">Составить образец КЗ</div>
+    <div class="free-checker">
+      <div class="task-input-label">Условие задачи</div>
+      <textarea class="task-desc-input" id="sample-task" placeholder="Например: У Маши было 18 яблок. Она отдала 7 подруге. Сколько яблок осталось?"></textarea>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="generateSample()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          Составить образец
+        </button>
+      </div>
+      <div class="feedback-box" id="sample-feedback"></div>
+    </div>
+  </div>
+
+  <div class="sdiv"></div>
+
+  <!-- BLOCK 2: CHECK -->
+  <div>
+    <div style="font-family:'Unbounded',sans-serif;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:10px;">Проверить свою КЗ</div>
+    <div class="free-checker">
+      <div class="task-input-label">Условие задачи (необязательно)</div>
+      <textarea class="task-desc-input" id="free-task" placeholder="Например: На первом диске 12 мультфильмов. На втором на 5 меньше. Сколько всего?"></textarea>
+
+      <div class="task-input-label">Ваша краткая запись</div>
+      <textarea class="kz-input" id="free-kz" style="min-height:160px;" placeholder="1 диск — 12 м.&#10;2 диск — ? м., на 5 м. меньше&#10;Всего — ?"></textarea>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="checkFree()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
+          Проверить
+        </button>
+        <button class="btn btn-secondary" onclick="clearFree()">Очистить</button>
+      </div>
+
+      <div class="feedback-box" id="free-feedback"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+function showTab(name) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  event.target.classList.add('active');
+}
+
+function showFeedback(elId, data, status) {
+  const el = document.getElementById(elId);
+  if (!el || !data) return;
+  el.className = 'feedback-box visible';
+
+  const isOk = status === 'ok';
+  const icon = isOk
+    ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>`
+    : `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`;
+
+  let body = `<div class="score-row">
+    <div class="score-pill ${isOk ? 'score-ok' : 'score-err'}">${icon} ${data.score}/100</div>
+  </div>
+  <p style="margin-bottom:8px">${data.summary}</p>`;
+
+  if (data.praise) {
+    body += `<p style="color:var(--accent);margin-bottom:8px">✓ ${data.praise}</p>`;
+  }
+  if (data.errors && data.errors.length > 0) {
+    body += `<p style="font-weight:600;margin-bottom:4px;color:var(--warn)">Ошибки:</p><ul>${data.errors.map(e => `<li>${e}</li>`).join('')}</ul>`;
+  }
+  if (data.corrections && data.corrections.length > 0) {
+    body += `<p style="font-weight:600;margin:10px 0 4px;color:var(--ink2)">Как исправить:</p><ul>${data.corrections.map(c => `<li>${c}</li>`).join('')}</ul>`;
+  }
+
+  el.innerHTML = `
+    <div class="feedback-header ${isOk ? 'ok' : 'errors'}">${icon} ${isOk ? 'Отлично!' : 'Есть ошибки'}</div>
+    <div class="feedback-body">${body}</div>
+  `;
+}
+
+// ============================================================
+// GENERATE SAMPLE
+// ============================================================
+async function generateSample() {
+  const taskDesc = document.getElementById('sample-task').value.trim();
+  if (!taskDesc) { alert('Введите условие задачи'); return; }
+
+  const feedbackEl = document.getElementById('sample-feedback');
+  feedbackEl.className = 'feedback-box visible';
+  feedbackEl.innerHTML = `<div class="feedback-header checking"><div class="spinner"></div> Составляю образец...</div>`;
+
+  const prompt = `Ты методист начальной школы. Составь эталонную краткую запись для математической задачи строго по правилам:
+1. Все слова — в именительном падеже (кто? что?)
+2. Каждая величина — на отдельной строке
+3. Порядок строк соответствует логике задачи (хронология событий)
+4. Вопрос записывается кратко: одно слово + «?» (без «Сколько»): «Было — ?», «Всего — ?» и т.п.
+5. Если неизвестна начальная величина — она идёт первой строкой со знаком вопроса
+6. Используй стандартные сокращения: м. = мультфильмы, р. = рубли, к. = карандаши/копейки, л. = литры и т.п.
+
+Задача: «${taskDesc}»
+
+Ответь в формате JSON строго без markdown:
+{
+  "kz": "готовая краткая запись (строки через \\n)",
+  "explanation": "краткое пояснение к каждой строке (1-2 предложения)"
+}`;
+
+  try {
+    const raw = await felixAPI(prompt);
+    const parsed = JSON.parse(raw.replace(/```json|```/g, '').trim());
+
+    const kzHtml = parsed.kz
+      .split('\n')
+      .map(line => `<div style="font-family:monospace;font-size:14px;line-height:2;color:var(--ink)">${line}</div>`)
+      .join('');
+
+    feedbackEl.innerHTML = `
+      <div class="feedback-header ok">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
+        Образец краткой записи
+      </div>
+      <div class="feedback-body">
+        <div style="background:var(--bg);border-radius:var(--radius-sm);padding:12px 16px;border-left:3px solid var(--accent);margin-bottom:12px;">${kzHtml}</div>
+        <p style="font-size:13px;color:var(--ink2)">${parsed.explanation}</p>
+      </div>
+    `;
+  } catch(e) {
+    feedbackEl.innerHTML = `<div class="feedback-header errors">Ошибка</div><div class="feedback-body">${e.message || 'Не удалось подключиться. Попробуйте снова.'}</div>`;
+  }
+}
+
+// ============================================================
+// FREE CHECKER
+// ============================================================
+async function checkFree() {
+  const kz = document.getElementById('free-kz').value.trim();
+  const taskDesc = document.getElementById('free-task').value.trim();
+  if (!kz) { alert('Введите краткую запись'); return; }
+
+  const feedbackEl = document.getElementById('free-feedback');
+  feedbackEl.className = 'feedback-box visible';
+  feedbackEl.innerHTML = `<div class="feedback-header checking"><div class="spinner"></div> Проверяю...</div>`;
+
+  const taskPart = taskDesc ? `Задача: «${taskDesc}»\n\n` : 'Условие задачи не указано.\n\n';
+
+  const prompt = `Ты методист начальной школы. Проверяй краткую запись математической задачи строго по этим правилам:
+1. Все слова должны быть в именительном падеже (кто? что?)
+2. Каждая величина — на отдельной строке
+3. Порядок строк должен соответствовать логике задачи (хронология событий)
+4. Вопрос записывается кратко одним словом + «?» — нельзя писать «Сколько было», «Сколько всего» и т.п., только «Было — ?», «Всего — ?»
+5. Если неизвестна начальная величина, она записывается первой строкой со знаком вопроса
+
+${taskPart}Краткая запись:
+${kz}
+
+Ответь в формате JSON строго без markdown:
+{
+  "verdict": "ok" или "errors",
+  "score": число от 0 до 100,
+  "summary": "одно предложение общего вывода",
+  "errors": ["ошибка 1", "ошибка 2"],
+  "corrections": ["что нужно исправить 1"],
+  "praise": "что сделано правильно (если есть)"
+}`;
+
+  try {
+    const raw = await felixAPI(prompt);
+    const parsed = JSON.parse(raw.replace(/```json|```/g, '').trim());
+    showFeedback('free-feedback', parsed, parsed.verdict);
+  } catch(e) {
+    feedbackEl.innerHTML = `<div class="feedback-header errors">Ошибка</div><div class="feedback-body">${e.message || 'Не удалось подключиться. Попробуйте снова.'}</div>`;
+  }
+}
+
+function clearFree() {
+  document.getElementById('free-task').value = '';
+  document.getElementById('free-kz').value = '';
+  document.getElementById('free-feedback').className = 'feedback-box';
+  document.getElementById('free-feedback').innerHTML = '';
+}
+
+// ============================================================
+// INIT
+// ============================================================
+
+// --- Felix backend helpers ---
+function saveKey(val) {
+  localStorage.setItem('kzClientKey', val.trim());
+  document.getElementById('keyStatus').textContent = val.trim() ? '✅' : '';
+}
+function getKey() {
+  return localStorage.getItem('kzClientKey') || '';
+}
+async function felixAPI(prompt) {
+  const clientKey = getKey();
+  if (!clientKey) throw new Error('Введите ключ доступа в поле вверху страницы');
+  return new Promise((resolve, reject) => {
+    const fd = new FormData();
+    fd.append('prompt', prompt);
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', 'https://api.aiaistudio.org/solve');
+    xhr.setRequestHeader('X-Client-Key', clientKey);
+    xhr.onload = () => {
+      try {
+        const data = JSON.parse(xhr.responseText);
+        if (data.error) reject(new Error(data.error));
+        else resolve(data.answer || '');
+      } catch(e) { reject(new Error('Ошибка парсинга ответа')); }
+    };
+    xhr.onerror = () => reject(new Error('Сетевая ошибка'));
+    xhr.send(fd);
+  });
+}
+
+// Восстановить ключ из localStorage
+(function() {
+  const saved = localStorage.getItem('kzClientKey');
+  if (saved) {
+    document.getElementById('clientKeyInput').value = saved;
+    document.getElementById('keyStatus').textContent = '✅';
+  }
+})();
+
+</script>
+</body>
+</html>
